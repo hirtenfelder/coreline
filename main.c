@@ -6,6 +6,7 @@
 #include "lib/cyw43_led.h"
 
 #define DEV_ENV
+#define DEV_ENV_RESET_TIMEOUT (30 * 1000)
 
 int64_t reset_pico() {
     printf("Entering BOOTSEL mode.\n");
@@ -18,8 +19,7 @@ int main(void) {
     cyw43_led_enable();
 
 #ifdef DEV_ENV
-    // Schedule callback after 30 seconds
-    add_alarm_in_ms(30 * 1000, reset_pico, NULL, false);
+    add_alarm_in_ms(DEV_ENV_RESET_TIMEOUT, reset_pico, NULL, false);
 #endif
 
     while (true) {
