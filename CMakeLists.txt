@@ -36,6 +36,9 @@ pico_sdk_init()
 add_executable(Speedometer
         main.c
         lib/cyw43_led.c
+        wshare_lcd/DEV_Config.c
+        wshare_lcd/LCD_1in8.c
+        wshare_lcd/GUI_Paint.c
 )
 
 pico_set_program_name(Speedometer "Speedometer")
@@ -49,6 +52,8 @@ pico_enable_stdio_usb(Speedometer 1)
 target_link_libraries(Speedometer
         pico_stdlib
         hardware_spi
+        hardware_i2c
+        hardware_pwm
         pico_cyw43_arch_lwip_threadsafe_background
 )
 
