@@ -39,6 +39,9 @@ add_executable(Speedometer
         wshare_lcd/DEV_Config.c
         wshare_lcd/LCD_1in8.c
         wshare_lcd/GUI_Paint.c
+        fonts/font24.c
+        lib/lcd_st7735s.c
+        lib/pico_rp2350.c
 )
 
 pico_set_program_name(Speedometer "Speedometer")

@@ -1,38 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "pico/stdlib.h"
-#include "pico/cyw43_arch.h"
 #include "pico/bootrom.h"
-#include "lib/cyw43_led.h"
-#include "wshare_lcd/DEV_Config.h"
-#include "wshare_lcd/GUI_Paint.h"
+#include "lib/pico_rp2350.h"
+#include "lib/lcd_st7735s.h"
 #include "wshare_lcd/LCD_1in8.h"
 
 #define DEBUG_ENV
-#define DEBUG_ENV_RESET_TIMEOUT (30 * 1000)
-
-int64_t reset_pico() {
-    printf("Entering BOOTSEL mode.\n");
-    reset_usb_boot(0, 0);
-}
+#define DEBUG_ENV_RESET_TIMEOUT (60 * 1000)
 
 int main(void) {
-    stdio_init_all();
-    cyw43_led_init();
-    cyw43_led_enable();
-
-    if (DEV_Module_Init()) {
-        return EXIT_FAILURE;
-    }
-
-    LCD_1IN8_Init(HORIZONTAL);
-    LCD_1IN8_Clear(BLUE);
+    pico_rp2350_init();
 
 #ifdef DEBUG_ENV
-    add_alarm_in_ms(DEBUG_ENV_RESET_TIMEOUT, reset_pico, NULL, false);
+    add_alarm_in_ms(DEBUG_ENV_RESET_TIMEOUT, pico_rp2350_reset, NULL, false);
 #endif
 
     while (true) {
-        tight_loop_contents();
+        // tight_loop_contents();
+        lcd_st7735s_draw_string("rp2350");
+        DEV_Delay_ms(1000);
+        lcd_st7735s_draw_string("st7735s");
+        DEV_Delay_ms(1000);
     }
 }
