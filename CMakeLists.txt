@@ -32,16 +32,15 @@ project(Speedometer C CXX ASM)
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
+file(GLOB LIB_SOURCES "lib/*.c")
+file(GLOB WSHARE_LCD_SOURCES "wshare_lcd/*.c")
+file(GLOB FONTS_SOURCES "fonts/*.c")
 
 add_executable(Speedometer
         main.c
-        lib/cyw43_led.c
-        wshare_lcd/DEV_Config.c
-        wshare_lcd/LCD_1in8.c
-        wshare_lcd/GUI_Paint.c
-        fonts/font24.c
-        lib/lcd_st7735s.c
-        lib/pico_rp2350.c
+        ${LIB_SOURCES}
+        ${WSHARE_LCD_SOURCES}
+        ${FONTS_SOURCES}
 )
 
 pico_set_program_name(Speedometer "Speedometer")
@@ -66,4 +65,3 @@ target_include_directories(Speedometer PRIVATE
 )
 
 pico_add_extra_outputs(Speedometer)
-
