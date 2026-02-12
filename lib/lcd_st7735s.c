@@ -1,4 +1,5 @@
 #include "lcd_st7735s.h"
+#include <string.h>
 #include "wshare_lcd/DEV_Config.h"
 #include "wshare_lcd/GUI_Paint.h"
 #include "wshare_lcd/LCD_1in8.h"
@@ -24,13 +25,16 @@ int lcd_st7735s_init() {
     return EXIT_SUCCESS;
 }
 
-int lcd_st7735s_draw_string(const char *pString) {
+int lcd_st7735s_draw_string(const char *pString1, const char *pString2) {
     if (lcd_buffer == NULL) {
         printf("lcd_st7735s_draw_string failed!\n");
         return EXIT_FAILURE;
     }
     Paint_Clear(WHITE);
-    Paint_DrawString_EN(1, 1, pString, &Font24, BLACK, WHITE);
+    Paint_DrawString_EN(1, 1, pString1, &Font16, BLACK, WHITE);
+    const int status_color = strcmp(pString2, "A") == 0 ? BLACK : RED;
+    Paint_DrawString_EN(1, 20, pString2, &Font16, status_color, WHITE);
+
     LCD_1IN8_Display(lcd_buffer);
     return EXIT_SUCCESS;
 }

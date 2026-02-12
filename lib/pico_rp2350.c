@@ -1,5 +1,6 @@
 #include "cyw43_led.h"
 #include "lcd_st7735s.h"
+#include "ublox_neo6m.h"
 #include "pico/bootrom.h"
 #include "pico/stdio.h"
 #include "wshare_lcd/GUI_Paint.h"
@@ -14,6 +15,9 @@ void pico_rp2350_init() {
 
     // Init device and LCD
     lcd_st7735s_init();
+
+    // Init GPS Ublox Neo-6m
+    ublox_neo6m_init();
 }
 
 int64_t pico_rp2350_reset() {

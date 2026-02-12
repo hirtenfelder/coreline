@@ -36,10 +36,11 @@ int lcd_st7735s_init(void);
  *
  * lcd_st7735s_init() must be called successfully before this function.
  *
- * @param pString  Null-terminated string to be drawn on the LCD.
+ * @param pString1  Null-terminated string to be drawn on the LCD as line one.
+ * @param pString2  Null-terminated string to be drawn on the LCD as line two.
  * @return EXIT_SUCCESS if drawing of the string was successfully,
  *         EXIT_FAILURE if drawing of the string has been failed.
  */
-int lcd_st7735s_draw_string(const char *pString);
+int lcd_st7735s_draw_string(const char *pString1, const char *pString2);
 
 #endif //SPEEDOMETER_LCD_ST7735S_H
