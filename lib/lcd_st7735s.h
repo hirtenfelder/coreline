@@ -1,5 +1,11 @@
 #ifndef SPEEDOMETER_LCD_ST7735S_H
 #define SPEEDOMETER_LCD_ST7735S_H
+#include "wshare_lcd/GUI_Paint.h"
+
+struct lcd_line_t {
+    char text[16];
+    UWORD color_foreground;
+};
 
 /**
  * @brief Initializes the ST7735S LCD and its persistent framebuffer.
@@ -30,8 +36,9 @@ int lcd_st7735s_init(void);
  * internal line buffer at the specified index. The content will later
  * be rendered by lcd_st7735s_draw_lines().
  *
- * @param line  Null-terminated string to copy into the buffer.
+ * @param text  Null-terminated string to copy into the buffer.
  * @param index Index of the line to update (0 to NUM_LINES - 1).
+ * @param color_foreground The foreground text color.
  *
  * @return EXIT_SUCCESS on success.
  * @return EXIT_FAILURE if the index is out of range.
@@ -39,7 +46,7 @@ int lcd_st7735s_init(void);
  * @note The destination buffer size must be large enough to hold `line`.
  *       No bounds checking is performed on the string length.
  */
-int lcd_st7735s_set_line(const char *line, int index);
+int lcd_st7735s_set_line(const char *text, int index, UWORD color_foreground);
 
 /**
  * @brief Renders all stored text lines to the ST7735S LCD.

@@ -9,7 +9,7 @@ static UWORD *lcd_buffer = NULL;
 #define MAX_LEN 16
 #define NUM_LINES 6
 
-static char lines[NUM_LINES][MAX_LEN] = {"", "", "", "", "", ""};
+static struct lcd_line_t lines[NUM_LINES] = {};
 
 int lcd_st7735s_init() {
     DEV_Module_Init();
@@ -27,14 +27,20 @@ int lcd_st7735s_init() {
         Paint_SetScale(65);
         Paint_SetRotate(ROTATE_0);
     }
+
+    for (int i = 0; i < NUM_LINES; i++) {
+        lines[i] = (struct lcd_line_t){.text = "", .color_foreground = BLACK};
+    }
+
     return EXIT_SUCCESS;
 }
 
-int lcd_st7735s_set_line(const char *line, const int index) {
+int lcd_st7735s_set_line(const char *line, const int index, UWORD foreground_color) {
     if (index < 0 || index >= NUM_LINES) {
         return EXIT_FAILURE;
     }
-    strcpy(lines[index], line);
+    strcpy(lines[index].text, line);
+    lines[index].color_foreground = foreground_color;
     return EXIT_SUCCESS;
 }
 
@@ -46,8 +52,8 @@ int lcd_st7735s_draw_lines() {
     Paint_Clear(WHITE);
     int y_start = 8;
     for (int i = 0; i < NUM_LINES; i++) {
-        printf("line %s at %d\n", lines[i], y_start);
-        Paint_DrawString_EN(4, y_start, lines[i], &Font16, BLACK, WHITE);
+        printf("line %s at %d\n", lines[i].text, y_start);
+        Paint_DrawString_EN(4, y_start, lines[i].text, &Font16, lines[i].color_foreground, WHITE);
         y_start += (int) Font16.Height + 4;
     }
     LCD_1IN8_Display(lcd_buffer);
