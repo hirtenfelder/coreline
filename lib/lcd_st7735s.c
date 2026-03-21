@@ -35,12 +35,12 @@ int lcd_st7735s_init() {
     return EXIT_SUCCESS;
 }
 
-int lcd_st7735s_set_line(const char *line, const int index, UWORD foreground_color) {
+int lcd_st7735s_set_line(const char *text, const int index, UWORD const color_foreground) {
     if (index < 0 || index >= NUM_LINES) {
         return EXIT_FAILURE;
     }
-    strcpy(lines[index].text, line);
-    lines[index].color_foreground = foreground_color;
+    strcpy(lines[index].text, text);
+    lines[index].color_foreground = color_foreground;
     return EXIT_SUCCESS;
 }
 
