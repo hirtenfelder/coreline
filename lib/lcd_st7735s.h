@@ -24,23 +24,38 @@
 int lcd_st7735s_init(void);
 
 /**
- * @brief Draws a text string on the LCD using the persistent framebuffer.
+ * @brief Sets a line of text in the LCD line buffer.
  *
- * This function renders the given null-terminated string into the
- * previously allocated framebuffer and then transfers the framebuffer
- * contents to the LCD.
+ * This function copies the provided null-terminated string into the
+ * internal line buffer at the specified index. The content will later
+ * be rendered by lcd_st7735s_draw_lines().
  *
- * The framebuffer is owned by the LCD driver and is reused across calls.
- * No dynamic memory allocation is performed here, ensuring predictable
- * execution time and avoiding heap fragmentation during normal operation.
+ * @param line  Null-terminated string to copy into the buffer.
+ * @param index Index of the line to update (0 to NUM_LINES - 1).
  *
- * lcd_st7735s_init() must be called successfully before this function.
+ * @return EXIT_SUCCESS on success.
+ * @return EXIT_FAILURE if the index is out of range.
  *
- * @param pString1  Null-terminated string to be drawn on the LCD as line one.
- * @param pString2  Null-terminated string to be drawn on the LCD as line two.
- * @return EXIT_SUCCESS if drawing of the string was successfully,
- *         EXIT_FAILURE if drawing of the string has been failed.
+ * @note The destination buffer size must be large enough to hold `line`.
+ *       No bounds checking is performed on the string length.
  */
-int lcd_st7735s_draw_string(const char *pString1, const char *pString2);
+int lcd_st7735s_set_line(const char *line, int index);
+
+/**
+ * @brief Renders all stored text lines to the ST7735S LCD.
+ *
+ * This function clears the display buffer, then draws all strings stored
+ * in the internal `lines[]` buffer line by line using Font16. Each line
+ * is vertically spaced by font height + 4 pixels. After drawing, the
+ * buffer is sent to the physical LCD.
+ *
+ * @return EXIT_SUCCESS on successful rendering.
+ * @return EXIT_FAILURE if the LCD buffer is not initialized.
+ *
+ * @note Requires `lcd_buffer` to be initialized before calling.
+ * @note Uses white background and black text for rendering.
+ * @note Line spacing is controlled by `Font16.Height + 4`.
+ */
+int lcd_st7735s_draw_lines(void);
 
 #endif //SPEEDOMETER_LCD_ST7735S_H

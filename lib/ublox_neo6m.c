@@ -25,7 +25,7 @@ int ublox_neo6m_init() {
     return EXIT_SUCCESS;
 }
 
-bool ublox_neo6m_read_next_nmea_sentence(void) {
+bool ublox_neo6m_read_next_nmea_sentence() {
     static size_t idx = 0;
     static bool collecting = false;
 

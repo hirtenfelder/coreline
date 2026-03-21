@@ -6,6 +6,11 @@
 
 static UWORD *lcd_buffer = NULL;
 
+#define MAX_LEN 16
+#define NUM_LINES 6
+
+static char lines[NUM_LINES][MAX_LEN] = {"", "", "", "", "", ""};
+
 int lcd_st7735s_init() {
     DEV_Module_Init();
     LCD_1IN8_Init(HORIZONTAL);
@@ -25,16 +30,26 @@ int lcd_st7735s_init() {
     return EXIT_SUCCESS;
 }
 
-int lcd_st7735s_draw_string(const char *pString1, const char *pString2) {
+int lcd_st7735s_set_line(const char *line, const int index) {
+    if (index < 0 || index >= NUM_LINES) {
+        return EXIT_FAILURE;
+    }
+    strcpy(lines[index], line);
+    return EXIT_SUCCESS;
+}
+
+int lcd_st7735s_draw_lines() {
     if (lcd_buffer == NULL) {
         printf("lcd_st7735s_draw_string failed!\n");
         return EXIT_FAILURE;
     }
     Paint_Clear(WHITE);
-    Paint_DrawString_EN(1, 1, pString1, &Font16, BLACK, WHITE);
-    const int status_color = strcmp(pString2, "A") == 0 ? BLACK : RED;
-    Paint_DrawString_EN(1, 20, pString2, &Font16, status_color, WHITE);
-
+    int y_start = 8;
+    for (int i = 0; i < NUM_LINES; i++) {
+        printf("line %s at %d\n", lines[i], y_start);
+        Paint_DrawString_EN(4, y_start, lines[i], &Font16, BLACK, WHITE);
+        y_start += (int) Font16.Height + 4;
+    }
     LCD_1IN8_Display(lcd_buffer);
     return EXIT_SUCCESS;
 }
