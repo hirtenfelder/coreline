@@ -18,7 +18,7 @@ It integrates a DHT22 sensor for temperature and humidity, a u-blox NEO-6M GPS m
 * ST7735S 1.8" SPI LCD (Waveshare or compatible)
 * Breadboard and jumper wires
 
-# Build Instructions
+## Build Instructions
 
 Requirements:
 
@@ -41,18 +41,18 @@ cmake ..
 make
 ```
 
-# Flashing
+## Flashing
 * Hold the BOOTSEL button on the Pico
 * Connect it to your computer via USB
 * Copy the generated .uf2 file to the mounted device 
  
-# Notes
+## Notes
 * The DHT22 sensor requires at least 2 seconds between readings
 * GPS modules may take time to acquire a signal
 * The current implementation uses a blocking loop
 * Error handling is minimal and can be improved
 
-# Future Improvements
+## Future Improvements
 * Non-blocking sensor and GPS handling
 * Improved error recovery
 * Power optimization
