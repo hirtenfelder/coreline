@@ -1,6 +1,6 @@
 # Coreline Sandbox
 
-Coreline is a C-based embedded application for the Raspberry Pi Pico that reads environmental and GPS data and displays it in real time on an SPI LCD.
+Coreline is a C-based embedded application for the Raspberry Pi Pico microcontroller that reads environmental and GPS data and displays it in real time on an SPI LCD.
 
 It integrates a DHT22 sensor for temperature and humidity, a u-blox NEO-6M GPS module for positioning data, and an ST7735S display for output.
 
@@ -12,7 +12,7 @@ It integrates a DHT22 sensor for temperature and humidity, a u-blox NEO-6M GPS m
 * Lightweight and efficient embedded C implementation
 
 ## Hardware Requirements
-* Raspberry Pi Pico (RP2040 or compatible)
+* Raspberry Pi Pico 2 microcontroller (RP2350 or compatible)
 * DHT22 temperature and humidity sensor
 * u-blox NEO-6M GPS module
 * ST7735S 1.8" SPI LCD (Waveshare or compatible)
@@ -24,7 +24,7 @@ Requirements:
 
 * CMake (version 3.13 or newer)
 * ARM GCC toolchain (arm-none-eabi-gcc)
-* Raspberry Pi Pico SDK
+* Raspberry Pi Pico 2 SDK
 
 Build steps:
 
@@ -58,3 +58,4 @@ make
 * Power optimization
 * Configurable display layout
 * Support for additional sensors
+ 
