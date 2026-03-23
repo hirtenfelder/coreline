@@ -56,6 +56,7 @@ target_link_libraries(Speedometer
         hardware_spi
         hardware_i2c
         hardware_pwm
+        pico_multicore
         # Use 'pico_cyw43_arch_none' if LED/Wi-Fi is not needed. This will reduce the binary size.
         pico_cyw43_arch_lwip_threadsafe_background
 )

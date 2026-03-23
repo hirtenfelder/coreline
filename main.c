@@ -4,21 +4,31 @@
 #include "wshare_lcd/LCD_1in8.h"
 #include "lib/ublox_neo6m.h"
 #include "lib/bk_dht22.h"
+#include "pico/multicore.h"
 
 #define DEBUG_ENV_RESET_TIMEOUT (60 * 1000)
 
 void do_temperature(dht22_data_t dht22_data);
+
 void do_gps(void);
+
+void core1_entry() {
+    while (true) {
+        do_gps();
+    }
+}
 
 int main(void) {
     pico_rp2350_init();
     // add_alarm_in_ms(DEBUG_ENV_RESET_TIMEOUT, pico_rp2350_reset, NULL, false);
 
+    // Run GPS updates on Cortex-M core 1 while main is running on core 0
+    multicore_launch_core1(core1_entry);
+
     dht22_data_t dht22_data;
     while (true) {
         do_temperature(dht22_data);
         sleep_ms(2000); // Minimum 2s between reads
-        do_gps();
     }
 }
 
