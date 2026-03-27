@@ -5,17 +5,17 @@
 // $GPRMC,040302.663,A,3939.7,N,10506.6,W,0.27,358.86,200804,,*1A
 struct gps_data {
     // UTC timestamp, HHMMSS + null terminator
-    char gprmc_timestamp[7];
+    char gprmc_timestamp[12];
     // Position status (A = data valid, V = data invalid)
-    char gprmc_status;
+    char gprmc_status[2];
     // ddmm.mmmm format
     char gprmc_latitude[12];
     // Latitude direction: (N = North, S = South)
-    char gprmc_latitude_direction;
+    char gprmc_latitude_direction[2];
     // dddmm.mmmm format
     char gprmc_longitude[12];
     // Longitude direction: (E = East, W = West)
-    char gprmc_longitude_direction;
+    char gprmc_longitude_direction[2];
     // Speed over ground, knots
     char gprmc_speed_knots[12];
 };
@@ -29,5 +29,7 @@ void ublox_neo6m_parse_nmea_sentence();
 char* ublox_neo6m_get_timestamp();
 
 char* ublox_neo6m_get_status();
+
+char *ublox_neo6m_get_speed_kmh();
 
 #endif //SPEEDOMETER_UBLOX_NEO6M_H

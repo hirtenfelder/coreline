@@ -52,7 +52,7 @@ int lcd_st7735s_draw_lines() {
     Paint_Clear(WHITE);
     int y_start = 8;
     for (int i = 0; i < NUM_LINES; i++) {
-        printf("line %s at %d\n", lines[i].text, y_start);
+        // printf("line %s at %d\n", lines[i].text, y_start);
         Paint_DrawString_EN(4, y_start, lines[i].text, &Font16, lines[i].color_foreground, WHITE);
         y_start += (int) Font16.Height + 4;
     }

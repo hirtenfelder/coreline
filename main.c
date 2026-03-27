@@ -52,16 +52,16 @@ void do_gps() {
         const char *timestamp = ublox_neo6m_get_timestamp();
         const char *status = ublox_neo6m_get_status();
         lcd_st7735s_set_line(timestamp, 2, BLACK);
-        lcd_st7735s_set_line(status, 3, BLACK);
         lcd_st7735s_draw_lines();
-        DEV_Delay_ms(1000);
-        if (strcmp(status, "A") != 0) {
-            lcd_st7735s_set_line("Please wait", 4, BLUE);
-            lcd_st7735s_set_line("GPS init..", 5, RED);
-            lcd_st7735s_draw_lines();
-            DEV_Delay_ms(1000);
-        } else {
+        if (strcmp(status, "A") == 0) {
+            const char *speed_kmh = ublox_neo6m_get_speed_kmh();
+            lcd_st7735s_set_line(speed_kmh, 3, BLUE);
             lcd_st7735s_set_line("", 4, BLACK);
+            lcd_st7735s_set_line("", 5, BLACK);
+            lcd_st7735s_draw_lines();
+        } else {
+            lcd_st7735s_set_line("", 3, BLACK);
+            lcd_st7735s_set_line("GPS init..", 4, RED);
             lcd_st7735s_set_line("", 5, BLACK);
             lcd_st7735s_draw_lines();
         }

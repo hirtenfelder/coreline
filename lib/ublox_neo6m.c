@@ -58,29 +58,61 @@ bool ublox_neo6m_read_next_nmea_sentence() {
     return false; // no complete sentence yet
 }
 
+char *collect_nmea_value(char *p, char *value) {
+    // Find next comma
+    p = strchr(p, ',');
+    if (!p) {
+        return NULL;
+    }
+    p++;
+
+    // Collect all characters until next comma or end marker
+    int i = 0;
+    while (p[i] != ',' && p[i] != '\0' && p[i] != '*') {
+        value[i] = p[i];
+        i++;
+    }
+
+    // In case of empty value, use question mark as value.
+    if (i == 0) {
+        value[i++] = '?';
+    }
+
+    // Add end marker
+    value[i] = '\0';
+
+    return p + i;
+}
+
+void print_nmea() {
+    printf("-> timestamp: %s\n", nmea_data.gprmc_timestamp);
+    printf("-> status: %s\n", nmea_data.gprmc_status);
+    printf("-> latitude: %s\n", nmea_data.gprmc_latitude);
+    printf("-> latitude direction: %s\n", nmea_data.gprmc_latitude_direction);
+    printf("-> longitude: %s\n", nmea_data.gprmc_longitude);
+    printf("-> longitude direction: %s\n", nmea_data.gprmc_longitude_direction);
+    printf("-> speed knots: %s\n", nmea_data.gprmc_speed_knots);
+}
+
 void ublox_neo6m_parse_nmea_sentence() {
+    printf("Got NMEA sentence %s \n", nmea);
+
+    // Example GPRMC NMEA:
+    // $GPRMC,211124.00,V,,,,,,,260326,,,N*7B
+    // $GPRMC,040302.663,A,3939.7,N,10506.6,W,0.27,358.86,200804,,*1A
+
     if (strncmp(nmea, "$GPRMC", 6) == 0) {
         char *p = nmea;
 
-        // Find first comma
-        p = strchr(p, ',');
-        if (p != NULL) {
-            p++; // move past the comma
-            // Copy up to 6 characters for HHMMSS
-            for (int i = 0; i < 6; i++) {
-                nmea_data.gprmc_timestamp[i] = p[i];
-            }
-            nmea_data.gprmc_timestamp[6] = '\0';
-        }
-        // Find next comma
-        p = strchr(p, ',');
-        if (p != NULL) {
-            p++;
-            nmea_data.gprmc_status = p[0] == ',' ? '?' : p[0];
-        }
+        p = collect_nmea_value(p, nmea_data.gprmc_timestamp);
+        p = collect_nmea_value(p, nmea_data.gprmc_status);
+        p = collect_nmea_value(p, nmea_data.gprmc_latitude);
+        p = collect_nmea_value(p, nmea_data.gprmc_latitude_direction);
+        p = collect_nmea_value(p, nmea_data.gprmc_longitude);
+        p = collect_nmea_value(p, nmea_data.gprmc_longitude_direction);
+        collect_nmea_value(p, nmea_data.gprmc_speed_knots);
 
-        printf("Got timestamp: %s\n", nmea_data.gprmc_timestamp);
-        printf("Got status: %c\n", nmea_data.gprmc_status);
+        print_nmea();
     }
 }
 
@@ -111,5 +143,21 @@ char *ublox_neo6m_get_timestamp() {
 }
 
 char *ublox_neo6m_get_status() {
-    return &nmea_data.gprmc_status;
+    return nmea_data.gprmc_status;
+}
+
+char *ublox_neo6m_get_speed_kmh() {
+    static char formatted[12];
+
+    if (nmea_data.gprmc_speed_knots[0] == '\0' || nmea_data.gprmc_speed_knots[0] == '?') {
+        formatted[0] = '0';
+        formatted[1] = '\0';
+        return formatted;
+    }
+
+    const float knots = strtof(nmea_data.gprmc_speed_knots, NULL);
+    const float kmh = knots * 1.852f;
+
+    snprintf(formatted, sizeof(formatted), "%.2f", kmh);
+    return formatted;
 }
