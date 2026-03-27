@@ -58,7 +58,13 @@ bool ublox_neo6m_read_next_nmea_sentence() {
     return false; // no complete sentence yet
 }
 
-char *collect_nmea_value(char *p, char *value) {
+static const char *collect_nmea_value(const char *p, char *value, const size_t value_size) {
+    assert(value != NULL);
+    assert(value_size >= 2);
+    if (!p) {
+        return NULL;
+    }
+
     // Find next comma
     p = strchr(p, ',');
     if (!p) {
@@ -67,8 +73,8 @@ char *collect_nmea_value(char *p, char *value) {
     p++;
 
     // Collect all characters until next comma or end marker
-    int i = 0;
-    while (p[i] != ',' && p[i] != '\0' && p[i] != '*') {
+    size_t i = 0;
+    while (p[i] != ',' && p[i] != '\0' && p[i] != '*' && i < value_size - 1) {
         value[i] = p[i];
         i++;
     }
@@ -102,15 +108,20 @@ void ublox_neo6m_parse_nmea_sentence() {
     // $GPRMC,040302.663,A,3939.7,N,10506.6,W,0.27,358.86,200804,,*1A
 
     if (strncmp(nmea, "$GPRMC", 6) == 0) {
-        char *p = nmea;
+        const char *p = nmea;
 
-        p = collect_nmea_value(p, nmea_data.gprmc_timestamp);
-        p = collect_nmea_value(p, nmea_data.gprmc_status);
-        p = collect_nmea_value(p, nmea_data.gprmc_latitude);
-        p = collect_nmea_value(p, nmea_data.gprmc_latitude_direction);
-        p = collect_nmea_value(p, nmea_data.gprmc_longitude);
-        p = collect_nmea_value(p, nmea_data.gprmc_longitude_direction);
-        collect_nmea_value(p, nmea_data.gprmc_speed_knots);
+        p = collect_nmea_value(p, nmea_data.gprmc_timestamp, sizeof(nmea_data.gprmc_timestamp));
+        p = collect_nmea_value(p, nmea_data.gprmc_status, sizeof(nmea_data.gprmc_status));
+        p = collect_nmea_value(p, nmea_data.gprmc_latitude, sizeof(nmea_data.gprmc_latitude));
+        p = collect_nmea_value(p, nmea_data.gprmc_latitude_direction, sizeof(nmea_data.gprmc_latitude_direction));
+        p = collect_nmea_value(p, nmea_data.gprmc_longitude, sizeof(nmea_data.gprmc_longitude));
+        p = collect_nmea_value(p, nmea_data.gprmc_longitude_direction, sizeof(nmea_data.gprmc_longitude_direction));
+        p = collect_nmea_value(p, nmea_data.gprmc_speed_knots, sizeof(nmea_data.gprmc_speed_knots));
+
+        if (!p) {
+            printf("Failed to parse GPRMC fields.\n");
+            return;
+        }
 
         print_nmea();
     }

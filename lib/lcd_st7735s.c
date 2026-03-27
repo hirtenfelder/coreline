@@ -39,7 +39,8 @@ int lcd_st7735s_set_line(const char *text, const int index, UWORD const color_fo
     if (index < 0 || index >= NUM_LINES) {
         return EXIT_FAILURE;
     }
-    strcpy(lines[index].text, text);
+    // snprintf prevents overflows when you write longer strings to the display
+    snprintf(lines[index].text, sizeof(lines[index].text), "%s", text);
     lines[index].color_foreground = color_foreground;
     return EXIT_SUCCESS;
 }
