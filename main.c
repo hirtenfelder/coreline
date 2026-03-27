@@ -49,21 +49,22 @@ void do_temperature(dht22_data_t dht22_data) {
 void do_gps() {
     if (ublox_neo6m_read_next_nmea_sentence()) {
         ublox_neo6m_parse_nmea_sentence();
+
         const char *timestamp = ublox_neo6m_get_timestamp();
-        const char *status = ublox_neo6m_get_status();
         lcd_st7735s_set_line(timestamp, 2, BLACK);
-        lcd_st7735s_draw_lines();
+
+        const char *status = ublox_neo6m_get_status();
         if (strcmp(status, "A") == 0) {
             const char *speed_kmh = ublox_neo6m_get_speed_kmh();
             lcd_st7735s_set_line(speed_kmh, 3, BLUE);
             lcd_st7735s_set_line("", 4, BLACK);
             lcd_st7735s_set_line("", 5, BLACK);
-            lcd_st7735s_draw_lines();
         } else {
             lcd_st7735s_set_line("", 3, BLACK);
             lcd_st7735s_set_line("GPS init..", 4, RED);
             lcd_st7735s_set_line("", 5, BLACK);
-            lcd_st7735s_draw_lines();
         }
+
+        lcd_st7735s_draw_lines();
     }
 }

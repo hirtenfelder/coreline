@@ -123,7 +123,7 @@ void ublox_neo6m_parse_nmea_sentence() {
             return;
         }
 
-        print_nmea();
+        // print_nmea();
     }
 }
 
