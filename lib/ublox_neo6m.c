@@ -98,6 +98,8 @@ void print_nmea() {
     printf("-> longitude: %s\n", nmea_data.gprmc_longitude);
     printf("-> longitude direction: %s\n", nmea_data.gprmc_longitude_direction);
     printf("-> speed knots: %s\n", nmea_data.gprmc_speed_knots);
+    printf("-> course over ground: %s\n", nmea_data.gprmc_course_over_ground);
+    printf("-> date: %s\n", nmea_data.gprmc_date);
 }
 
 void ublox_neo6m_parse_nmea_sentence() {
@@ -117,6 +119,8 @@ void ublox_neo6m_parse_nmea_sentence() {
         p = collect_nmea_value(p, nmea_data.gprmc_longitude, sizeof(nmea_data.gprmc_longitude));
         p = collect_nmea_value(p, nmea_data.gprmc_longitude_direction, sizeof(nmea_data.gprmc_longitude_direction));
         p = collect_nmea_value(p, nmea_data.gprmc_speed_knots, sizeof(nmea_data.gprmc_speed_knots));
+        p = collect_nmea_value(p, nmea_data.gprmc_course_over_ground, sizeof(nmea_data.gprmc_course_over_ground));
+        p = collect_nmea_value(p, nmea_data.gprmc_date, sizeof(nmea_data.gprmc_date));
 
         if (!p) {
             printf("Failed to parse GPRMC fields.\n");
@@ -149,6 +153,33 @@ char *ublox_neo6m_get_timestamp() {
     formatted[6] = ts[4];
     formatted[7] = ts[5];
     formatted[8] = '\0';
+
+    return formatted;
+}
+
+char* ublox_neo6m_get_date() {
+    // Format "dd.MM.yyyy"
+    static char formatted[11];
+    const char *ts = nmea_data.gprmc_date;
+
+    // Require at least 6 digits available
+    for (int i = 0; i < 6; i++) {
+        if (ts[i] < '0' || ts[i] > '9') {
+            return "--.--.----";
+        }
+    }
+
+    formatted[0] = ts[0];
+    formatted[1] = ts[1];
+    formatted[2] = '.';
+    formatted[3] = ts[2];
+    formatted[4] = ts[3];
+    formatted[5] = '.';
+    formatted[6] = '2';
+    formatted[7] = '0';
+    formatted[8] = ts[4];
+    formatted[9] = ts[5];
+    formatted[10] = '\0';
 
     return formatted;
 }
