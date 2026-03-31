@@ -30,6 +30,29 @@ struct lcd_line_t {
 int lcd_st7735s_init(void);
 
 /**
+ * @brief Acquire the LCD update mutex.
+ *
+ * Blocks until exclusive access to the ST7735S line buffer and draw
+ * operations is available. Call this before performing a group of
+ * `lcd_st7735s_set_line()` updates followed by `lcd_st7735s_draw_lines()`
+ * so the complete screen update is atomic across both cores.
+ *
+ * @note Must be paired with `lcd_st7735s_unlock()`.
+ * @note This function blocks if another core currently holds the lock.
+ */
+void lcd_st7735s_lock();
+
+/**
+ * @brief Release the LCD update mutex.
+ *
+ * Releases the mutex previously acquired with `lcd_st7735s_lock()`,
+ * allowing other cores to update and render the LCD again.
+ *
+ * @note Only call this after a matching `lcd_st7735s_lock()`.
+ */
+void lcd_st7735s_unlock();
+
+/**
  * @brief Sets a line of text in the LCD line buffer.
  *
  * This function copies the provided null-terminated string into the

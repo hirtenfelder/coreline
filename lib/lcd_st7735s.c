@@ -1,5 +1,7 @@
 #include "lcd_st7735s.h"
 #include <string.h>
+
+#include "pico/mutex.h"
 #include "wshare_lcd/DEV_Config.h"
 #include "wshare_lcd/GUI_Paint.h"
 #include "wshare_lcd/LCD_1in8.h"
@@ -9,6 +11,7 @@ static UWORD *lcd_buffer = NULL;
 #define MAX_LEN 16
 #define NUM_LINES 6
 
+static mutex_t lcd_mutex;
 static struct lcd_line_t lines[NUM_LINES] = {};
 
 int lcd_st7735s_init() {
@@ -32,7 +35,17 @@ int lcd_st7735s_init() {
         lines[i] = (struct lcd_line_t){.text = "", .color_foreground = BLACK};
     }
 
+    mutex_init(&lcd_mutex);
+
     return EXIT_SUCCESS;
+}
+
+void lcd_st7735s_lock() {
+    mutex_enter_blocking(&lcd_mutex);
+}
+
+void lcd_st7735s_unlock() {
+    mutex_exit(&lcd_mutex);
 }
 
 int lcd_st7735s_set_line(const char *text, const int index, UWORD const color_foreground) {

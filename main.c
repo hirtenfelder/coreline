@@ -8,8 +8,7 @@
 
 #define DEBUG_ENV_RESET_TIMEOUT (60 * 1000)
 
-void do_temperature(dht22_data_t dht22_data);
-
+void do_temperature(dht22_data_t *dht22_data);
 void do_gps(void);
 
 void core1_entry() {
@@ -27,20 +26,23 @@ int main(void) {
 
     dht22_data_t dht22_data;
     while (true) {
-        do_temperature(dht22_data);
+        do_temperature(&dht22_data);
         sleep_ms(2000); // Minimum 2s between reads
     }
 }
 
-void do_temperature(dht22_data_t dht22_data) {
-    if (dht22_read(&dht22_data)) {
-        printf("Temperature: %.1f C, Humidity: %.1f %%\n", dht22_data.temperature, dht22_data.humidity);
+void do_temperature(dht22_data_t *dht22_data) {
+    if (dht22_read(dht22_data)) {
+        printf("Temperature: %.1f C, Humidity: %.1f %%\n", dht22_data->temperature, dht22_data->humidity);
         char temp_str[16], hum_str[16];
-        snprintf(temp_str, sizeof(temp_str), "%.1fC", dht22_data.temperature);
-        snprintf(hum_str, sizeof(hum_str), "%.1f%%", dht22_data.humidity);
+        snprintf(temp_str, sizeof(temp_str), "%.1fC", dht22_data->temperature);
+        snprintf(hum_str, sizeof(hum_str), "%.1f%%", dht22_data->humidity);
+
+        lcd_st7735s_lock();
         lcd_st7735s_set_line(temp_str, 0, BLACK);
         lcd_st7735s_set_line(hum_str, 1, BLACK);
         lcd_st7735s_draw_lines();
+        lcd_st7735s_unlock();
     } else {
         printf("DHT22 read failed\n");
     }
@@ -51,9 +53,10 @@ void do_gps() {
         ublox_neo6m_parse_nmea_sentence();
 
         const char *timestamp = ublox_neo6m_get_timestamp();
-        lcd_st7735s_set_line(timestamp, 2, BLACK);
-
         const char *status = ublox_neo6m_get_status();
+
+        lcd_st7735s_lock();
+        lcd_st7735s_set_line(timestamp, 2, BLACK);
         if (strcmp(status, "A") == 0) {
             const char *speed_kmh = ublox_neo6m_get_speed_kmh();
             lcd_st7735s_set_line(speed_kmh, 3, BLUE);
@@ -64,7 +67,7 @@ void do_gps() {
             lcd_st7735s_set_line("GPS init..", 4, RED);
             lcd_st7735s_set_line("", 5, BLACK);
         }
-
         lcd_st7735s_draw_lines();
+        lcd_st7735s_unlock();
     }
 }
