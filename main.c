@@ -9,6 +9,7 @@
 #define DEBUG_ENV_RESET_TIMEOUT (60 * 1000)
 
 void do_temperature(dht22_data_t *dht22_data);
+
 void do_gps(void);
 
 void core1_entry() {
@@ -32,30 +33,34 @@ int main(void) {
 }
 
 void do_temperature(dht22_data_t *dht22_data) {
-    if (dht22_read(dht22_data)) {
-        printf("Temperature: %.1f C, Humidity: %.1f %%\n", dht22_data->temperature, dht22_data->humidity);
-        char temp_str[16], hum_str[16];
-        snprintf(temp_str, sizeof(temp_str), "%.1fC", dht22_data->temperature);
-        snprintf(hum_str, sizeof(hum_str), "%.1f%%", dht22_data->humidity);
+    if (!dht22_read(dht22_data)) {
+        printf("DHT22 read failed\n");
+        return;
+    }
 
-        lcd_st7735s_lock();
+    printf("Temperature: %.1f C, Humidity: %.1f %%\n", dht22_data->temperature, dht22_data->humidity);
+    char temp_str[16], hum_str[16];
+    snprintf(temp_str, sizeof(temp_str), "%.1fC", dht22_data->temperature);
+    snprintf(hum_str, sizeof(hum_str), "%.1f%%", dht22_data->humidity);
+
+    if (lcd_st7735s_lock()) {
         lcd_st7735s_set_line(temp_str, 0, BLACK);
         lcd_st7735s_set_line(hum_str, 1, BLACK);
         lcd_st7735s_draw_lines();
         lcd_st7735s_unlock();
-    } else {
-        printf("DHT22 read failed\n");
     }
 }
 
 void do_gps() {
-    if (ublox_neo6m_read_next_nmea_sentence()) {
-        ublox_neo6m_parse_nmea_sentence();
+    if (!ublox_neo6m_read_next_nmea_sentence()) {
+        return;
+    }
+    ublox_neo6m_parse_nmea_sentence();
 
-        const char *timestamp = ublox_neo6m_get_timestamp();
-        const char *status = ublox_neo6m_get_status();
+    const char *timestamp = ublox_neo6m_get_timestamp();
+    const char *status = ublox_neo6m_get_status();
 
-        lcd_st7735s_lock();
+    if (lcd_st7735s_lock()) {
         lcd_st7735s_set_line(timestamp, 2, BLACK);
         if (strcmp(status, "A") == 0) {
             const char *speed_kmh = ublox_neo6m_get_speed_kmh();

@@ -37,10 +37,13 @@ int lcd_st7735s_init(void);
  * `lcd_st7735s_set_line()` updates followed by `lcd_st7735s_draw_lines()`
  * so the complete screen update is atomic across both cores.
  *
+*  @return true if the caller can be granted ownership of the mutex before the timeout expires otherwise false will be
+*          returned and the caller will NOT own the mutex.
+ *
  * @note Must be paired with `lcd_st7735s_unlock()`.
  * @note This function blocks if another core currently holds the lock.
  */
-void lcd_st7735s_lock();
+bool lcd_st7735s_lock();
 
 /**
  * @brief Release the LCD update mutex.

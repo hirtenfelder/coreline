@@ -40,8 +40,8 @@ int lcd_st7735s_init() {
     return EXIT_SUCCESS;
 }
 
-void lcd_st7735s_lock() {
-    mutex_enter_blocking(&lcd_mutex);
+bool lcd_st7735s_lock() {
+    return mutex_enter_timeout_ms(&lcd_mutex, 1000);
 }
 
 void lcd_st7735s_unlock() {
