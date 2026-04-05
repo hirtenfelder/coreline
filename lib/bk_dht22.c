@@ -52,8 +52,8 @@ bool dht22_read(dht22_data_t *dht22_data) {
     const uint16_t raw_humidity = (data[0] << 8) | data[1];
     const uint16_t raw_temp = (data[2] << 8) | data[3];
 
-    dht22_data->temperature = raw_humidity / 10.0f;
-    dht22_data->humidity = (raw_temp & 0x8000) ? -((raw_temp & 0x7FFF) / 10.0f) : (raw_temp / 10.0f);
+    dht22_data->humidity = raw_humidity / 10.0f;
+    dht22_data->temperature = (raw_temp & 0x8000) ? -((raw_temp & 0x7FFF) / 10.0f) : (raw_temp / 10.0f);
 
     return true;
 }
