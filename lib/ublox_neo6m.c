@@ -124,11 +124,23 @@ void ublox_neo6m_parse_nmea_sentence() {
 
         if (!p) {
             printf("Failed to parse GPRMC fields.\n");
-            return;
         }
-
-        // print_nmea();
     }
+}
+
+int ublox_neo6m_get_time_offset_CEST() {
+    int offset = 1; // default winter
+
+    // get month to decide if winter or summer
+    const char *ds = nmea_data.gprmc_date;
+    if (ds[2] < '0' || ds[2] > '9' || ds[3] < '0' || ds[3] > '9') {
+        return offset;
+    }
+    const int month = (ds[2] - '0') * 10 + (ds[3] - '0');
+    if (month >= 4 && month <= 9) {
+        offset = 2; // summer offset
+    }
+    return offset;
 }
 
 char *ublox_neo6m_get_timestamp() {
@@ -144,20 +156,20 @@ char *ublox_neo6m_get_timestamp() {
         }
     }
 
-    formatted[0] = ts[0];
-    formatted[1] = ts[1];
-    formatted[2] = ':';
-    formatted[3] = ts[2];
-    formatted[4] = ts[3];
-    formatted[5] = ':';
-    formatted[6] = ts[4];
-    formatted[7] = ts[5];
-    formatted[8] = '\0';
+    // Parse time
+    int hour = (ts[0] - '0') * 10 + (ts[1] - '0');
+    const int min = (ts[2] - '0') * 10 + (ts[3] - '0');
+    const int sec = (ts[4] - '0') * 10 + (ts[5] - '0');
 
+    // Apply offset
+    const int offset = ublox_neo6m_get_time_offset_CEST();
+    hour = (hour + offset) % 24;
+
+    snprintf(formatted, sizeof(formatted), "%02d:%02d:%02d", hour, min, sec);
     return formatted;
 }
 
-char* ublox_neo6m_get_date() {
+char *ublox_neo6m_get_date() {
     // Format "dd.MM.yyyy"
     static char formatted[11];
     const char *ts = nmea_data.gprmc_date;
@@ -200,6 +212,6 @@ char *ublox_neo6m_get_speed_kmh() {
     const float knots = strtof(nmea_data.gprmc_speed_knots, NULL);
     const float kmh = knots * 1.852f;
 
-    snprintf(formatted, sizeof(formatted), "%.2f", kmh);
+    snprintf(formatted, sizeof(formatted), "%.0f", kmh);
     return formatted;
 }

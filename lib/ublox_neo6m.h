@@ -86,7 +86,7 @@ void ublox_neo6m_parse_nmea_sentence();
  * characters, the function returns the placeholder string `--:--:--`.
  *
  * @return Pointer to a static null-terminated string containing the
- *         formatted UTC time.
+ *         formatted CEST time.
  *
  * @note The returned pointer refers to internal static storage and must
  *       not be modified or freed.
